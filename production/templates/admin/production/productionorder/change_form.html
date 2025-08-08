@@ -1,0 +1,33 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+    {% if original.status == 'pending' %}
+    <li>
+        <a href="{% url 'admin:production_productionorder_material_ready' original.pk %}" class="button">备料完成</a>
+    </li>
+    {% endif %}
+    
+    {% if original.status == 'material_ready' %}
+    <li>
+        <a href="{% url 'admin:production_productionorder_start_production' original.pk %}" class="button">开始生产</a>
+    </li>
+    {% endif %}
+    
+    {% if original.status == 'in_production' %}
+    <li>
+        <a href="{% url 'admin:production_productionorder_record_progress' original.pk %}" class="button">记录进度</a>
+    </li>
+    <li>
+        <a href="{% url 'admin:production_productionorder_complete_production' original.pk %}" class="button">完成生产</a>
+    </li>
+    {% endif %}
+    
+    {% if original.status == 'completed' %}
+    <li>
+        <a href="{% url 'admin:production_productionorder_print' original.pk %}" class="button" target="_blank">打印</a>
+    </li>
+    {% endif %}
+    
+    {{ block.super }}
+{% endblock %} 

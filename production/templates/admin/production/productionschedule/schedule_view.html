@@ -1,0 +1,111 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="schedule-container" style="padding: 20px;">
+    <h2>生产排程 - {{ schedule.production_order.order_number }}</h2>
+    
+    <!-- 基本信息 -->
+    <div class="info-section" style="margin-bottom: 20px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <th style="width: 120px; text-align: right; padding: 8px;">产品：</th>
+                <td>{{ schedule.production_order.product.name }}</td>
+                <th style="width: 120px; text-align: right; padding: 8px;">计划数量：</th>
+                <td>{{ schedule.production_order.planned_quantity }}</td>
+            </tr>
+            <tr>
+                <th style="text-align: right; padding: 8px;">计划开始：</th>
+                <td>{{ schedule.planned_start_date|date:"Y-m-d" }}</td>
+                <th style="text-align: right; padding: 8px;">计划完成：</th>
+                <td>{{ schedule.planned_end_date|date:"Y-m-d" }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 甘特图 -->
+    <div class="gantt-chart" style="margin: 20px 0;">
+        <h3>生产进度甘特图</h3>
+        <div id="gantt"></div>
+    </div>
+
+    <!-- 工序进度表 -->
+    <div class="process-table">
+        <h3>工序进度</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px;">工序</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">计划开始</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">计划完成</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">日产能</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">完成数量</th>
+                    <th style="border: 1px solid #ddd; padding: 8px;">状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for process in schedule.process_schedules.all %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ process.process_step.name }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ process.planned_start_date|date:"Y-m-d" }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ process.planned_end_date|date:"Y-m-d" }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ process.process_step.daily_capacity }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ process.completed_quantity }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">{{ process.get_status_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 引入 Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    (function() {  // 使用立即执行函数包装代码
+        google.charts.load('current', {'packages':['gantt']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Task ID');
+            data.addColumn('string', 'Task Name');
+            data.addColumn('date', 'Start Date');
+            data.addColumn('date', 'End Date');
+            data.addColumn('number', 'Duration');
+            data.addColumn('number', 'Percent Complete');
+            data.addColumn('string', 'Dependencies');
+
+            // 使用 Django 模板生成 JSON 数据
+            var processData = JSON.parse('{{ process_data|escapejs }}');
+
+            // 添加数据行
+            processData.forEach(function(process) {
+                data.addRow([
+                    process.id,
+                    process.name,
+                    new Date(process.start),
+                    new Date(process.end),
+                    null,
+                    process.completed_percent,
+                    process.dependency
+                ]);
+            });
+
+            var options = {
+                height: 400,
+                gantt: {
+                    criticalPathEnabled: true,
+                    criticalPathStyle: {
+                        stroke: '#e64a19',
+                        strokeWidth: 2
+                    }
+                }
+            };
+
+            var chart = new google.visualization.Gantt(document.getElementById('gantt'));
+            chart.draw(data, options);
+        }
+    })();  // 立即执行函数结束
+</script>
+{% endblock %} 

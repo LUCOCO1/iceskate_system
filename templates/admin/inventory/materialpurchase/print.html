@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="print-content">
+    <h2>采购单</h2>
+    <div class="purchase-info">
+        <p>采购单号：{{ purchase.purchase_number }}</p>
+        <p>供应商：{{ purchase.supplier }}</p>
+        <p>采购日期：{{ purchase.purchase_date }}</p>
+        <p>状态：{{ purchase.get_status_display }}</p>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>材料</th>
+                <th>规格</th>
+                <th>数量</th>
+                <th>单位</th>
+                <th>备注</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.material }}</td>
+                <td>{{ item.specification }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit }}</td>
+                <td>{{ item.notes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

@@ -1,0 +1,65 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style type="text/css">
+        .import-form {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .help-text {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="import-form">
+    <h2>导入产品明细</h2>
+    
+    <div class="help-text">
+        <h3>Excel文件格式说明：</h3>
+        <p>请确保Excel文件包含以下列：</p>
+        <ul>
+            <li>产品编码（必填）</li>
+            <li>产品名称（必填）</li>
+            <li>规格</li>
+            <li>单位（必填）</li>
+            <li>备注</li>
+            <li>材料编码</li>
+            <li>用量</li>
+            <li>材料单位</li>
+            <li>材料备注</li>
+        </ul>
+        <p>注意：</p>
+        <ul>
+            <li>如果产品编码已存在，将更新现有记录</li>
+            <li>材料编码必须在系统中已存在</li>
+            <li>所有数量必须为正数</li>
+        </ul>
+    </div>
+
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="margin: 20px 0;">
+            <input type="file" name="excel_file" accept=".xlsx,.xls" required>
+        </div>
+        <div>
+            <input type="submit" value="导入" class="default" style="float: none;">
+            <a href="../" class="button cancel-link">取消</a>
+        </div>
+    </form>
+</div>
+
+<div style="margin: 20px;">
+    <a href="{% static 'excel/product_import_template.xlsx' %}" class="button">
+        下载导入模板
+    </a>
+</div>
+{% endblock %} 

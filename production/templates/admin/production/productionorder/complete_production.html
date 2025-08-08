@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block content %}
+<div class="content-main">
+    <form method="post">
+        {% csrf_token %}
+        <div class="submit-row">
+            <h2>确认完成生产</h2>
+            <p>请输入实际完成数量：</p>
+            <div style="margin: 20px 0;">
+                <label for="completed_quantity">完成数量：</label>
+                <input type="number" name="completed_quantity" id="completed_quantity" 
+                       value="{{ object.planned_quantity }}" step="0.01" required>
+                {{ object.product.unit }}
+            </div>
+            <p>计划数量：{{ object.planned_quantity }} {{ object.product.unit }}</p>
+            <p>当前状态：{{ object.get_status_display }}</p>
+            
+            <div style="margin-top: 20px;">
+                <input type="submit" value="确认" class="default" style="margin-right: 10px;">
+                <a href="{% url 'admin:production_productionorder_change' object.pk %}" class="button cancel-link">取消</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %} 

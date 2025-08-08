@@ -1,0 +1,103 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="report-container" style="padding: 20px;">
+    <h2>产能报表</h2>
+    
+    <!-- 日期选择 -->
+    <div class="date-filter" style="margin-bottom: 20px;">
+        <form method="get">
+            <label>开始日期：</label>
+            <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+            <label>结束日期：</label>
+            <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+            <button type="submit">查询</button>
+        </form>
+    </div>
+    
+    <!-- 产能图表 -->
+    <div id="capacity_chart" style="height: 400px;"></div>
+    
+    <!-- 产能数据表格 -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th style="border: 1px solid #ddd; padding: 8px;">工序</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">总产能</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">需求量</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">使用率</th>
+                <th style="border: 1px solid #ddd; padding: 8px;">状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in capacity_data %}
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px;">
+                    {{ data.process }}
+                    {% if data.is_bottleneck %}
+                    <span style="color: red;">(瓶颈)</span>
+                    {% endif %}
+                </td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ data.capacity }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">{{ data.demand }}</td>
+                <td style="border: 1px solid #ddd; padding: 8px;">
+                    {{ data.usage_rate|floatformat:1 }}%
+                </td>
+                <td style="border: 1px solid #ddd; padding: 8px;">
+                    {% if data.usage_rate > 100 %}
+                    <span style="color: red;">超负荷</span>
+                    {% elif data.usage_rate > 80 %}
+                    <span style="color: orange;">接近满负荷</span>
+                    {% else %}
+                    <span style="color: green;">正常</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 引入 Echarts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+    var myChart = echarts.init(document.getElementById('capacity_chart'));
+    
+    var option = {
+        title: {
+            text: '工序产能使用率'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ['产能', '需求']
+        },
+        xAxis: {
+            type: 'category',
+            data: [{% for data in capacity_data %}'{{ data.process }}'{% if not forloop.last %}, {% endif %}{% endfor %}]
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name: '产能',
+                type: 'bar',
+                data: [{% for data in capacity_data %}{{ data.capacity }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+            },
+            {
+                name: '需求',
+                type: 'bar',
+                data: [{% for data in capacity_data %}{{ data.demand }}{% if not forloop.last %}, {% endif %}{% endfor %}]
+            }
+        ]
+    };
+    
+    myChart.setOption(option);
+</script>
+{% endblock %} 

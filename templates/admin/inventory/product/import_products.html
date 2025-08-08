@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {{ media }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">首页</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url 'admin:inventory_product_changelist' %}">产品</a>
+&rsaquo; 导入产品
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <fieldset class="module aligned">
+                <div class="form-row">
+                    <div>
+                        <label for="excel_file">选择Excel文件:</label>
+                        <input type="file" name="excel_file" id="excel_file" accept=".xlsx" required>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <div class="submit-row">
+                <input type="submit" value="导入" class="default">
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h3>导入说明：</h3>
+                <ul>
+                    <li>请使用 Excel 文件 (.xlsx 格式)</li>
+                    <li>Excel 文件必须包含以下列：
+                        <ul>
+                            <li>产品编码</li>
+                            <li>产品名称</li>
+                            <li>规格</li>
+                            <li>单位</li>
+                        </ul>
+                    </li>
+                    <li>如果产品编码已存在，将更新现有产品信息</li>
+                </ul>
+                
+                <h3>示例：</h3>
+                <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #ddd; padding: 8px;">产品编码</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">产品名称</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">规格</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">单位</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px;">P001</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">产品A</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">10x20cm</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">个</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %} 

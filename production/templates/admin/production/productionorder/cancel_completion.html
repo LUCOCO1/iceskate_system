@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block content %}
+<div id="content-main">
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <p>确认撤销生产单 {{ order.order_number }} 的完成状态？</p>
+            <p>完成数量：{{ order.completed_quantity }}</p>
+            <p class="warning">注意：此操作将从产品库存中扣减对应数量。</p>
+        </div>
+        <div class="submit-row">
+            <input type="submit" value="确认撤销" class="default" style="background-color: #dc3545;" />
+            <a href="{% url 'admin:production_productionorder_changelist' %}" class="button">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %} 

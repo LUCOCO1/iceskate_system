@@ -1,0 +1,69 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block content %}
+<div id="content-main">
+    <form method="post">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <label>生产单号:</label>
+                <div class="readonly">{{ order.order_number }}</div>
+            </div>
+            <div class="form-row">
+                <label>产品:</label>
+                <div class="readonly">{{ order.product }}</div>
+            </div>
+            <div class="form-row">
+                <label>计划数量:</label>
+                <div class="readonly">{{ order.planned_quantity }}</div>
+            </div>
+            <div class="form-row">
+                <label>已完成数量:</label>
+                <div class="readonly">{{ order.completed_quantity }}</div>
+            </div>
+            <div class="form-row">
+                <label for="id_quantity">本次完成数量:</label>
+                <input type="number" 
+                       name="quantity" 
+                       id="id_quantity" 
+                       step="0.01" 
+                       min="0.01"
+                       required 
+                       value="">
+            </div>
+            <div class="form-row">
+                <label for="id_notes">备注:</label>
+                <textarea name="notes" id="id_notes" rows="3"></textarea>
+            </div>
+        </fieldset>
+        <div class="submit-row">
+            <input type="submit" value="记录进度" class="default">
+        </div>
+    </form>
+    
+    <h2>进度历史记录</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>记录时间</th>
+                <th>本次数量</th>
+                <th>累计数量</th>
+                <th>进度</th>
+                <th>备注</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in order.progress_records.all %}
+            <tr>
+                <td>{{ record.record_date }}</td>
+                <td>{{ record.quantity }}</td>
+                <td>{{ record.accumulated_quantity }}</td>
+                <td>{{ record.progress }}%</td>
+                <td>{{ record.notes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

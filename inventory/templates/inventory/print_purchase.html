@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>采购单</title>
+    <style>
+        body {
+            font-family: SimSun, "宋体", sans-serif;
+            margin: 20px;
+            font-size: 14px;
+        }
+        .company-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .company-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .company-address {
+            margin-bottom: 5px;
+        }
+        .contact-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        .supplier-info {
+            margin-bottom: 15px;
+        }
+        .supplier-info table {
+            width: 100%;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+        .remarks {
+            margin-top: 20px;
+        }
+        .remarks p {
+            margin: 5px 0;
+        }
+        .signatures {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .red-text {
+            color: red;
+        }
+        .company-seal {
+            text-align: center;
+            margin-top: 50px;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="company-header">
+        <div class="company-name">东莞市伟呈塑胶制品有限公司</div>
+        <div class="company-address">地址：东莞市大朗镇西牛陂大院地横街8号</div>
+        <div class="contact-info">
+            <span>电话：0769-81066897</span>
+            <span>传真：0769-83319879</span>
+        </div>
+    </div>
+
+    <div class="title">采购单</div>
+
+    <div class="supplier-info">
+        <table>
+            <tr>
+                <td>供应商：{{ purchase.supplier.name }}</td>
+                <td>订购日期：{{ purchase.purchase_date|date:"Y年n月j日" }}</td>
+            </tr>
+            <tr>
+                <td>联系人：{{ purchase.supplier.contact }}</td>
+                <td>订单交期：{{ purchase.delivery_date|date:"Y年n月j日" }}</td>
+            </tr>
+            <tr>
+                <td>电话：{{ purchase.supplier.phone }}</td>
+                <td>订单编号：{{ purchase.purchase_number }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>管制编号</th>
+                <th>材质</th>
+                <th>长度*宽度MM</th>
+                <th>数量/KG</th>
+                <th>来料方式</th>
+                <th>备注</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.control_number }}</td>
+                <td>{{ item.material.name }}</td>
+                <td>{{ item.specification }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.material_type }}</td>
+                <td>{{ item.notes|default:"" }}</td>
+            </tr>
+            {% endfor %}
+            {% for i in "12345678" %}
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="remarks">
+        <p>备注：以上含税单价</p>
+        <p>1. 请收到订单6小时内确认订单交期回签我司</p>
+        <p class="red-text">2. 我司月结周期，本月26至下月25，以后所有订单均按此规定请款。</p>
+        <p>3. 付款方式月结60天</p>
+        <p>4. 确保材料内部无断裂，表面无刮伤，无麻点，无沙眼，无拉痕。</p>
+    </div>
+
+    <div class="signatures">
+        <span>确认回签：_____________</span>
+        <span>审核：_____________</span>
+        <span>制表人：_____________</span>
+    </div>
+
+    <div class="company-seal">
+        <!-- 公司印章位置 -->
+    </div>
+
+    <div class="no-print" style="margin-top: 20px; text-align: center;">
+        <button onclick="window.print()">打印</button>
+        <button onclick="window.close()">关闭</button>
+    </div>
+</body>
+</html> 
